@@ -480,6 +480,40 @@ std::function<void()> Window::openControllerTView(A... arg) {
 	};
 }
 
+std::function<void()> Window::saveVideoDump() {
+	return [=]() {
+		QString filename = GBAApp::app()->getSaveFileName(this, tr("Dump file"));
+		if(!filename.isEmpty()) {
+			QFile file(filename);
+			if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+				LOG(QT, WARN) << tr("Failed to open output file: %1").arg(filename);
+				return;
+			}
+
+			struct region_t {
+				size_t address;
+				size_t size;
+			};
+
+			std::array<struct region_t, 4> regions = {{
+				{0x04000000, 0x58},
+				{0x05000000, 0x400},
+				{0x06000000, 0x18000},
+				{0x07000000, 0x400}
+			}};
+
+			for(auto region: regions) {
+				std::vector<uint16_t> tmp(region.size/2);
+				for(size_t i = 0; i < region.size; i += 2)
+					tmp[i/2] = GBAView16(static_cast<ARMCore*>(m_controller->thread()->core->cpu), region.address + i);
+
+				QByteArray out(reinterpret_cast<char*>(tmp.data()), 2*tmp.size());
+				file.write(out);
+			}
+		}
+	};
+}
+
 #ifdef USE_FFMPEG
 void Window::openVideoWindow() {
 	if (!m_videoView) {
@@ -1640,6 +1674,11 @@ void Window::setupMenu(QMenuBar* menubar) {
 	m_gameActions.append(ioViewer);
 	m_gbaActions.append(ioViewer);
 	addControlledAction(toolsMenu, ioViewer, "ioViewer");
+
+	QAction* videoDump = new QAction(tr("Dump video memory"), toolsMenu);
+	connect(videoDump, &QAction::triggered, saveVideoDump());
+	m_gameActions.append(videoDump);
+	addControlledAction(toolsMenu, videoDump, "videoDump");
 #endif
 
 	ConfigOption* skipBios = m_config->addOption("skipBios");

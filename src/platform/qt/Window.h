@@ -155,6 +155,7 @@ private:
 
 	template <typename T, typename... A> std::function<void()> openTView(A... arg);
 	template <typename T, typename... A> std::function<void()> openControllerTView(A... arg);
+	std::function<void()> saveVideoDump();
 
 	QAction* addControlledAction(QMenu* menu, QAction* action, const QString& name);
 	QAction* addHiddenAction(QMenu* menu, QAction* action, const QString& name);
