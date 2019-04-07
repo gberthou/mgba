@@ -98,6 +98,9 @@ uint16_t GBADMAWriteCNT_HI(struct GBA* gba, int dma, uint16_t control) {
 
 		GBADMASchedule(gba, dma, currentDma);
 	}
+
+	gba->dmaNotifier.callback(gba, dma, currentDma);
+
 	// If the DMA has already occurred, this value might have changed since the function started
 	return currentDma->reg;
 };

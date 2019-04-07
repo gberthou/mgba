@@ -125,6 +125,13 @@ static void GBAInit(void* cpu, struct mCPUComponent* component) {
 	gba->irqEvent.callback = _triggerIRQ;
 	gba->irqEvent.context = gba;
 	gba->irqEvent.priority = 0;
+
+	gba->dmaNotifier.callback = DMANotifierCallback;
+	gba->dmaNotifier.enable_lcd = 0;
+	gba->dmaNotifier.enable_palette = 0;
+	gba->dmaNotifier.enable_vram = 0;
+	gba->dmaNotifier.enable_attr = 0;
+	gba->dmaNotifier.enable_ram = 0;
 }
 
 void GBAUnloadROM(struct GBA* gba) {

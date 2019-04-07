@@ -79,6 +79,7 @@ set(SOURCE_FILES
 	Display.cpp
 	DisplayGL.cpp
 	DisplayQt.cpp
+	DMALogger.cpp
 	GBAApp.cpp
 	GBAKeyEditor.cpp
 	GIFView.cpp
@@ -127,6 +128,7 @@ set(UI_FILES
 	BattleChipView.ui
 	CheatsView.ui
 	DebuggerConsole.ui
+	DMALogger.ui
 	GIFView.ui
 	IOViewer.ui
 	LoadSaveState.ui
@@ -276,8 +278,8 @@ if(Qt5LinguistTools_FOUND)
 		list(APPEND TRANSLATION_FILES ${QT_QM_FILES})
 	endif()
 	add_custom_command(OUTPUT ${TRANSLATION_QRC}
-		               COMMAND ${CMAKE_COMMAND} -DTRANSLATION_QRC:FILEPATH="${TRANSLATION_QRC}" -DQM_BASE="${CMAKE_CURRENT_BINARY_DIR}" "-DTRANSLATION_FILES='${TRANSLATION_FILES}'" -P "${CMAKE_CURRENT_SOURCE_DIR}/ts.cmake"
-		               DEPENDS ${TRANSLATION_FILES})
+                       COMMAND ${CMAKE_COMMAND} -DTRANSLATION_QRC:FILEPATH="${TRANSLATION_QRC}" -DQM_BASE="${CMAKE_CURRENT_BINARY_DIR}" "-DTRANSLATION_FILES='${TRANSLATION_FILES}'" -P "${CMAKE_CURRENT_SOURCE_DIR}/ts.cmake"
+                       DEPENDS ${TRANSLATION_FILES})
 	qt5_add_resources(TRANSLATION_RESOURCES ${TRANSLATION_QRC})
 	list(APPEND RESOURCES ${TRANSLATION_RESOURCES})
 endif()

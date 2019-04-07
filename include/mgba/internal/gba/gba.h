@@ -18,6 +18,7 @@ CXX_GUARD_START
 #include <mgba/internal/gba/audio.h>
 #include <mgba/internal/gba/sio.h>
 #include <mgba/internal/gba/timer.h>
+#include <mgba/internal/gba/dma_notifier.h>
 
 #define GBA_ARM7TDMI_FREQUENCY 0x1000000U
 
@@ -116,6 +117,8 @@ struct GBA {
 
 	bool hardCrash;
 	bool allowOpposingDirections;
+
+	struct GBADMANotifier dmaNotifier;
 
 	bool debug;
 	char debugString[0x100];

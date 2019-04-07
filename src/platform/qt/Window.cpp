@@ -28,6 +28,7 @@
 #include "DebuggerConsole.h"
 #include "DebuggerConsoleController.h"
 #include "Display.h"
+#include "DMALogger.h"
 #include "CoreController.h"
 #include "GBAApp.h"
 #include "GDBController.h"
@@ -1675,10 +1676,17 @@ void Window::setupMenu(QMenuBar* menubar) {
 	m_gbaActions.append(ioViewer);
 	addControlledAction(toolsMenu, ioViewer, "ioViewer");
 
+	toolsMenu->addSeparator();
+
 	QAction* videoDump = new QAction(tr("Dump video memory"), toolsMenu);
 	connect(videoDump, &QAction::triggered, saveVideoDump());
 	m_gameActions.append(videoDump);
 	addControlledAction(toolsMenu, videoDump, "videoDump");
+
+	QAction* dmaLogger = new QAction(tr("DMA Logger"), toolsMenu);
+	connect(dmaLogger, &QAction::triggered, openControllerTView<DMALogger>());
+	m_gameActions.append(dmaLogger);
+	addControlledAction(toolsMenu, dmaLogger, "dmaLogger");
 #endif
 
 	ConfigOption* skipBios = m_config->addOption("skipBios");
