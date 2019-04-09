@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QDialog>
-#include <QList>
+#include <QTimer>
 
 #include <memory>
+#include <mgba/internal/gba/dma_notifier.h>
 
 #include "ui_DMALogger.h"
 
@@ -36,17 +37,23 @@ public:
 
 	DMALogger(std::shared_ptr<CoreController> controller, QWidget* parent = nullptr);
 
+	void addEntry(const struct GBADMANotifierEntry &entry);
+
 signals:
 
 public slots:
 
 private slots:
 	void bitFlipped();
+	void updateTable();
 
 private:
 	Ui::DMALogger m_ui;
 
 	std::array<QCheckBox*, 5> m_b;
+	QTableWidget* m_table;
+	QTimer m_updateTimer;
+	size_t m_lastSize;
 
 	std::shared_ptr<CoreController> m_controller;
 };

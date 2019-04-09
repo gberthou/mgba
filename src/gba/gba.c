@@ -132,6 +132,7 @@ static void GBAInit(void* cpu, struct mCPUComponent* component) {
 	gba->dmaNotifier.enable_vram = 0;
 	gba->dmaNotifier.enable_attr = 0;
 	gba->dmaNotifier.enable_ram = 0;
+	GBADMAListInit(&gba->dmaNotifier.entries, 1000);
 }
 
 void GBAUnloadROM(struct GBA* gba) {
