@@ -95,8 +95,11 @@ void DMALogger::updateTable()
 {
 	struct GBADMANotifier *dmaNotifier = &static_cast<GBA*>(m_controller->thread()->core->board)->dmaNotifier;
 	size_t size = GBADMAListSize(&dmaNotifier->entries);
-	for(size_t i = m_lastSize; i < size; ++i)
-		addEntry(*GBADMAListGetConstPointer(&dmaNotifier->entries, i));
-	m_lastSize = size;
+    if(m_lastSize < size) {
+        for(size_t i = m_lastSize; i < size; ++i)
+            addEntry(*GBADMAListGetConstPointer(&dmaNotifier->entries, i));
+        m_table->scrollToBottom();
+        m_lastSize = size;
+    }
 }
 

@@ -102,7 +102,7 @@
      </property>
      <column>
       <property name="text">
-       <string>test</string>
+       <string>DST</string>
       </property>
      </column>
      <column>
