@@ -79,6 +79,8 @@ void DMALogger::addEntry(const struct GBADMANotifierEntry &entry)
 	m_table->setItem(row, 1, new QTableWidgetItem(u32ToQString(entry.dma.source)));
 	m_table->setItem(row, 2, new QTableWidgetItem(u32ToQString(entry.actualSize)));
 	m_table->setItem(row, 3, new QTableWidgetItem(u32ToQString(entry.pc)));
+
+	m_table->setItem(row, 4, new QTableWidgetItem(u32ToQString(entry.occurrences)));
 }
 
 void DMALogger::bitFlipped()
@@ -95,6 +97,12 @@ void DMALogger::updateTable()
 {
 	struct GBADMANotifier *dmaNotifier = &static_cast<GBA*>(m_controller->thread()->core->board)->dmaNotifier;
 	size_t size = GBADMAListSize(&dmaNotifier->entries);
+
+    for(size_t i = 0; i < m_lastSize; ++i) {
+        const struct GBADMANotifierEntry *entry = GBADMAListGetConstPointer(&dmaNotifier->entries, i);
+        m_table->setItem(i, 4, new QTableWidgetItem(u32ToQString(entry->occurrences)));
+    }
+
     if(m_lastSize < size) {
         for(size_t i = m_lastSize; i < size; ++i)
             addEntry(*GBADMAListGetConstPointer(&dmaNotifier->entries, i));

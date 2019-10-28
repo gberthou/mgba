@@ -26,6 +26,7 @@ struct GBADMANotifierEntry
 	struct GBADMA dma;
 	uint32_t pc;
 	uint32_t actualSize;
+    size_t occurrences;
 };
 
 void DMANotifierCallback(struct GBA* gba, int channel, struct GBADMA* dma);

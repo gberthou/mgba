@@ -24,6 +24,31 @@ static inline int rangesOverlap(uint32_t beg0, uint32_t end0, uint32_t beg1, uin
 	return !(end0 < beg1 || beg0 > end1);
 }
 
+static int sameDMA(const struct GBADMA *a, const struct GBADMA *b)
+{
+    return a->dest == b->dest
+        && a->source == b->source;
+}
+
+static int sameEntry(const struct GBADMANotifierEntry *a, const struct GBADMANotifierEntry *b)
+{
+    return sameDMA(&a->dma, &b->dma)
+        && a->pc == b->pc
+        && a->actualSize == b->actualSize;
+}
+
+static struct GBADMANotifierEntry *search(struct GBADMAList *list, const struct GBADMANotifierEntry *entry)
+{
+    size_t size = GBADMAListSize(list);
+    for(size_t i = 0; i < size; ++i) {
+        struct GBADMANotifierEntry *ptr = GBADMAListGetPointer(list, i);
+        if(sameEntry(ptr, entry))
+            return ptr;
+    }
+
+    return NULL;
+}
+
 void DMANotifierCallback(struct GBA* gba, int channel, struct GBADMA* dma)
 {
 	uint32_t destBegin = dma->dest;
@@ -46,13 +71,19 @@ void DMANotifierCallback(struct GBA* gba, int channel, struct GBADMA* dma)
 		mustRecord = gba->dmaNotifier.enable_ram;
 	}
 
-	if(mustRecord && GBADMAListSize(&gba->dmaNotifier.entries) < 1000) {
+	if(mustRecord) {
 		struct GBADMANotifierEntry entry = {
 			.dma = *dma,
 			.pc = gba->cpu->gprs[ARM_PC],
-			.actualSize = size
+			.actualSize = size,
+            .occurrences = 0
 		};
-		*GBADMAListAppend(&gba->dmaNotifier.entries) = entry;
+
+        struct GBADMANotifierEntry *existing = search(&gba->dmaNotifier.entries, &entry);
+        if(existing)
+            ++existing->occurrences;
+        else if(GBADMAListSize(&gba->dmaNotifier.entries) < 1000)
+            *GBADMAListAppend(&gba->dmaNotifier.entries) = entry;
 	}
 }
 
